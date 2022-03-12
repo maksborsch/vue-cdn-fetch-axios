@@ -1,0 +1,173 @@
+<html>
+  <head>
+    <title>vue_cdn</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    />
+   <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+      integrity="sha512-c42qTSw/wPZ3/5LBzD+Bw5f7bSF2oxou6wEb+I/lqeaKV5FDIfMvvRp772y4jcJLKuGUOpbJMdg/BTl50fJYAw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.1.9/sweetalert2.min.css"
+      integrity="sha512-cyIcYOviYhF0bHIhzXWJQ/7xnaBuIIOecYoPZBgJHQKFPo+TOBA+BY1EnTpmM8yKDU4ZdI3UGccNGCEUdfbBqw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.1.9/sweetalert2.all.min.js"
+      integrity="sha512-IZ95TbsPTDl3eT5GwqTJH/14xZ2feLEGJRbII6bRKtE/HC6x3N4cHye7yyikadgAsuiddCY2+6gMntpVHL1gHw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script src="https://unpkg.com/vue-swal"></script>
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  </head>
+
+   <style>
+     .fade-enter-active {
+  transition: opacity 0.3s;
+}
+.fade-enter {
+  opacity: 0;
+}
+
+.slide-next-enter-active,
+.slide-next-leave-active {
+  transition: transform 0.3s ease-in-out;
+}
+.slide-next-enter {
+  transform: translate(100%);
+}
+.slide-next-leave-to {
+  transform: translate(-100%);
+}
+
+.slide-prev-enter-active,
+.slide-prev-leave-active {
+  transition: transform 0.5s ease-in-out;
+}
+.slide-prev-enter {
+  transform: translate(-100%);
+}
+.slide-prev-leave-to {
+  transform: translate(100%);
+}
+
+body {
+  overflow: hidden;
+  
+  font-size: 30px;
+  font-family: "Crimson Text", sans-serif;
+  color: rgb(0, 0, 0);
+}
+
+#app {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+}
+
+.slide {
+  width: 100%;
+  height: 70vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn {
+  z-index: 10;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: calc(50% - 35px);
+  left: 1%;
+  transition: transform 0.3s ease-in-out;
+  user-select: none;
+}
+
+.btn-next {
+  left: auto;
+  right: 1%;
+}
+
+.btn:hover {
+  transform: scale(1.1);
+}
+  </style>   
+
+  <body>
+    <div id="app" class="container">
+      <transition-group tag="div" :name="transitionName" class="slides-group">
+    <div v-if="show" :key="index" class="slide">
+      <p>Name: {{list[index].name}}<br />Email:  {{list[index].email}}</p>
+    </div>
+  </transition-group>
+  <div>
+  <button class="btn btn-primary btn-prev" @click="slide(-1)">
+  &#10094 Previous 
+  </button>
+  <button class="btn btn-primary btn-next" @click="slide(1)">
+   Next &#10095
+  </button>
+      </div>
+    
+    <script>
+    var app = new Vue({
+        el: "#app",
+        data: {
+          index: 0,
+          direction: 1,
+          transitionName: "fade",
+          show: false,  
+          list: undefined, 
+        },
+        methods: {
+    slide(dir) {
+      this.direction = dir;
+      dir === 1 ?
+      this.transitionName = "slide-next" :
+      this.transitionName = "slide-prev";
+      var len = this.list.length;
+       if (this.index >= len - 1) {
+              Swal.fire({
+                title: "It is the last element",
+                showClass: {
+                  popup: "animate__animated animate__fadeInDown",
+                },
+                hideClass: {
+                  popup: "animate__animated animate__fadeOutUp",
+                },
+              });
+              this.index = 0;
+            }else {
+              this.index = (this.index + dir % len + len) % len;
+            }      
+    } }, 
+        mounted() {
+          axios
+            .get("https://jsonplaceholder.typicode.com/posts/1/comments")
+            .then((response) => {
+              this.list = response.data;
+              
+            });
+        this.show = true;},
+      });
+    </script>
+ 
+  </body>
+  
+</html>
